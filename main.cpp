@@ -91,7 +91,34 @@ protected:
     int markCount;
 };
 
+class RandomlyTutor : public Tutor {
+public:
+    RandomlyTutor(std::string name) : Tutor(name) {}
+
+    void addMark(Pupil& pupil) override {
+        int adjustedMark = rand() % 4 + 2;
+        pupil.addMark(adjustedMark);
+        markCount++;
+
+        std::cout << "Учитель " << this->getName() << " поставил оценку " << adjustedMark
+                  << " ученику " << pupil.getName() << std::endl;
+
+        if (markCount % randomNumberMood == 0) {
+            changeMoodRandomly();
+            std::cout << "Настроение учителя " << name << " изменилось: "
+                      << (goodMood ? "Хорошее" : "Плохое") << std::endl;
+        }
+    }
+
+    void addMarkRandomly(Pupil& pupil) override {
+        addMark(pupil);
+    }
+
+private:
+    int randomNumberMood = rand() % 3 + 3;
+};
+
 int main() {
-    //Этап 1
+    
     return 0;
 }
