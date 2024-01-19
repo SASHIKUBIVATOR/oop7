@@ -118,6 +118,30 @@ private:
     int randomNumberMood = rand() % 3 + 3;
 };
 
+class Always5Tutor : public Tutor {
+public:
+    Always5Tutor(std::string name) : Tutor(name) {}
+
+    void addMark(Pupil& pupil) override {
+        int adjustedMark = 5;
+        pupil.addMark(adjustedMark);
+
+        std::cout << "Учитель " << this->getName() << " всегда поставляет оценку 5 ученику " << pupil.getName() << std::endl;
+    }
+};
+
+class Always2Tutor : public Tutor {
+public:
+    Always2Tutor(std::string name) : Tutor(name) {}
+
+    void addMark(Pupil& pupil) override {
+        int adjustedMark = 2;
+        pupil.addMark(adjustedMark);
+
+        std::cout << "Учитель " << this->getName() << " всегда поставляет оценку 2 ученику " << pupil.getName() << std::endl;
+    }
+};
+
 class Subject {
 public:
     Subject(std::string name) : name(name) {}
@@ -182,6 +206,6 @@ private:
 };
 
 int main() {
-    // Ваш код для четвёртого коммита (Этап 4)
+
     return 0;
 }
