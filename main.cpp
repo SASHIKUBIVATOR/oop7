@@ -118,7 +118,70 @@ private:
     int randomNumberMood = rand() % 3 + 3;
 };
 
+class Subject {
+public:
+    Subject(std::string name) : name(name) {}
+
+    const std::string& getName() const {
+        return name;
+    }
+
+    void addTutor(Tutor& tutor) {
+        tutors.push_back(&tutor);
+    }
+
+    void addPupil(Pupil& pupil) {
+        pupils.push_back(&pupil);
+    }
+
+    bool hasTutor(const Tutor& tutor) const {
+        return std::find(tutors.begin(), tutors.end(), &tutor) != tutors.end();
+    }
+
+    const std::vector<Pupil*>& getPupils() const {
+        return pupils;
+    }
+
+    void conductSubject() {
+        std::cout << "Учителя: ";
+        for (Tutor* tutor : tutors) {
+            std::cout << tutor->getName() << " ";
+        }
+        std::cout << "провели занятие ученикам: ";
+        for (Pupil* pupil : pupils) {
+            std::cout << pupil->getName() << " ";
+        }
+        std::cout << std::endl << "Результаты занятия " << this->getName() << ":" << std::endl;
+        std::cout << "//////////" << std::endl;
+        for (Tutor* tutor : tutors) {
+            for (Pupil* pupil : pupils) {
+                if (rand() % 2 == 0) {
+                    if (tutor->getMood()) {
+                        // В хорошем настроении случайное количество раз от 1 до 5
+                        int numMarks = rand() % 5 + 1;
+                        for (int i = 0; i < numMarks; ++i) {
+                            tutor->addMarkRandomly(*pupil);
+                        }
+                    } else {
+                        // В плохом настроении случайное количество раз от 1 до 3
+                        int numMarks = rand() % 3 + 1;
+                        for (int i = 0; i < numMarks; ++i) {
+                            tutor->addMarkRandomly(*pupil);
+                        }
+                    }
+                }
+            }
+        }
+        std::cout << "//////////" << std::endl;
+    }
+
+private:
+    std::string name;
+    std::vector<Tutor*> tutors;
+    std::vector<Pupil*> pupils;
+};
+
 int main() {
-    // Ваш код для третьего коммита (Этап 3)
+    // Ваш код для четвёртого коммита (Этап 4)
     return 0;
 }
