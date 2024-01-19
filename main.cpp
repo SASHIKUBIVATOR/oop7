@@ -42,7 +42,7 @@ private:
 
 class Tutor {
 public:
-    Tutor(std::string name) : name(name) {}
+    Tutor(std::string name, int moodChangeFrequency) : name(name), moodChangeFrequency(moodChangeFrequency) {}
 
     const std::string& getName() const {
         return name;
@@ -60,7 +60,7 @@ public:
         std::cout << "Учитель " << name << " поставил оценку " << adjustedMark
                   << " ученику " << pupil.getName() << " с " << (goodMood ? "хорошим" : "плохим") << " настроением" << std::endl;
 
-        if (markCount % 5 == 0) {
+        if (markCount % moodChangeFrequency == 0) {
             changeMoodRandomly();
             std::cout << "Настроение учителя " << name << " изменилось: "
                       << (goodMood ? "Хорошее" : "Плохое") << std::endl;
@@ -89,11 +89,12 @@ protected:
     bool goodMood = (rand() % 2 == 0); // Равновероятное хорошее или плохое настроение
     std::string name;
     int markCount;
+    int moodChangeFrequency;
 };
 
 class RandomlyTutor : public Tutor {
 public:
-    RandomlyTutor(std::string name) : Tutor(name) {}
+    RandomlyTutor(std::string name, int moodChangeFrequency) : Tutor(name, moodChangeFrequency) {}
 
     void addMark(Pupil& pupil) override {
         addMarkRandomly(pupil);
@@ -107,39 +108,22 @@ public:
         std::cout << "Учитель " << this->getName() << " поставил оценку " << adjustedMark
                   << " ученику " << pupil.getName() << std::endl;
 
-        if (markCount % randomNumberMood == 0) {
+        if (markCount % moodChangeFrequency == 0) {
             changeMoodRandomly();
             std::cout << "Настроение учителя " << name << " изменилось: "
                       << (goodMood ? "Хорошее" : "Плохое") << std::endl;
         }
     }
-
-private:
-    int randomNumberMood = rand() % 3 + 3;
 };
 
-class Always5Tutor : public Tutor {
+class FrequentMoodChangeTutor : public Tutor {
 public:
-    Always5Tutor(std::string name) : Tutor(name) {}
-
-    void addMark(Pupil& pupil) override {
-        int adjustedMark = 5;
-        pupil.addMark(adjustedMark);
-
-        std::cout << "Учитель " << this->getName() << " всегда поставляет оценку 5 ученику " << pupil.getName() << std::endl;
-    }
+    FrequentMoodChangeTutor(std::string name) : Tutor(name, 2) {} // Частая смена настроения каждые 2 оценки
 };
 
-class Always2Tutor : public Tutor {
+class RareMoodChangeTutor : public Tutor {
 public:
-    Always2Tutor(std::string name) : Tutor(name) {}
-
-    void addMark(Pupil& pupil) override {
-        int adjustedMark = 2;
-        pupil.addMark(adjustedMark);
-
-        std::cout << "Учитель " << this->getName() << " всегда поставляет оценку 2 ученику " << pupil.getName() << std::endl;
-    }
+    RareMoodChangeTutor(std::string name) : Tutor(name, 8) {} // Редкая смена настроения каждые 8 оценок
 };
 
 class Subject {
@@ -206,6 +190,6 @@ private:
 };
 
 int main() {
-
+    // Ваш код для шестого коммита (Этап 6)
     return 0;
 }
