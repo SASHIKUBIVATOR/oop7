@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 
+
 class Pupil {
 public:
     Pupil(std::string name) : name(name) {}
@@ -40,9 +41,10 @@ private:
     std::vector<int> marks;
 };
 
+
 class Tutor {
 public:
-    Tutor(std::string name, int moodChangeFrequency) : name(name), moodChangeFrequency(moodChangeFrequency) {}
+    Tutor(std::string name) : name(name) {}
 
     const std::string& getName() const {
         return name;
@@ -60,7 +62,7 @@ public:
         std::cout << "Учитель " << name << " поставил оценку " << adjustedMark
                   << " ученику " << pupil.getName() << " с " << (goodMood ? "хорошим" : "плохим") << " настроением" << std::endl;
 
-        if (markCount % moodChangeFrequency == 0) {
+        if (markCount % 5 == 0) {
             changeMoodRandomly();
             std::cout << "Настроение учителя " << name << " изменилось: "
                       << (goodMood ? "Хорошее" : "Плохое") << std::endl;
@@ -72,35 +74,28 @@ public:
         std::cout << "Учитель " << name << " поставил оценку " << mark
                   << " ученику " << pupil.getName() << std::endl;
     }
-
 protected:
     int calculateAdjustedMark(bool isExcellentPupil) const {
         if (goodMood) {
             return (isExcellentPupil) ? 5 : (rand() % 2 + 4);
-        } else {
+        }
+        else {
             return (isExcellentPupil) ? (rand() % 2 + 4) : (rand() % 2 + 2);
         }
     }
-
     void changeMoodRandomly() {
         goodMood = (rand() % 2 == 0); // Равновероятное хорошее или плохое настроение
     }
-
     bool goodMood = (rand() % 2 == 0); // Равновероятное хорошее или плохое настроение
     std::string name;
     int markCount;
-    int moodChangeFrequency;
 };
 
 class RandomlyTutor : public Tutor {
 public:
-    RandomlyTutor(std::string name, int moodChangeFrequency) : Tutor(name, moodChangeFrequency) {}
+    RandomlyTutor(std::string name) : Tutor(name) {}
 
-    void addMark(Pupil& pupil) override {
-        addMarkRandomly(pupil);
-    }
-
-    void addMarkRandomly(Pupil& pupil) override {
+    void addMark(Pupil& pupil) {
         int adjustedMark = rand() % 4 + 2;
         pupil.addMark(adjustedMark);
         markCount++;
@@ -108,23 +103,21 @@ public:
         std::cout << "Учитель " << this->getName() << " поставил оценку " << adjustedMark
                   << " ученику " << pupil.getName() << std::endl;
 
-        if (markCount % moodChangeFrequency == 0) {
+        if (markCount % randomNumberMood == 0) {
             changeMoodRandomly();
             std::cout << "Настроение учителя " << name << " изменилось: "
                       << (goodMood ? "Хорошее" : "Плохое") << std::endl;
         }
     }
+
+    void addMarkRandomly(Pupil& pupil) override {
+        addMark(pupil);
+    }
+
+private:
+    int randomNumberMood = rand() % 3 + 3;
 };
 
-class FrequentMoodChangeTutor : public Tutor {
-public:
-    FrequentMoodChangeTutor(std::string name) : Tutor(name, 2) {} // Частая смена настроения каждые 2 оценки
-};
-
-class RareMoodChangeTutor : public Tutor {
-public:
-    RareMoodChangeTutor(std::string name) : Tutor(name, 8) {} // Редкая смена настроения каждые 8 оценок
-};
 
 class Subject {
 public:
@@ -133,7 +126,6 @@ public:
     const std::string& getName() const {
         return name;
     }
-
     void addTutor(Tutor& tutor) {
         tutors.push_back(&tutor);
     }
@@ -170,7 +162,8 @@ public:
                         for (int i = 0; i < numMarks; ++i) {
                             tutor->addMarkRandomly(*pupil);
                         }
-                    } else {
+                    }
+                    else {
                         // В плохом настроении случайное количество раз от 1 до 3
                         int numMarks = rand() % 3 + 1;
                         for (int i = 0; i < numMarks; ++i) {
@@ -182,7 +175,6 @@ public:
         }
         std::cout << "//////////" << std::endl;
     }
-
 private:
     std::string name;
     std::vector<Tutor*> tutors;
@@ -239,7 +231,8 @@ public:
         auto it = std::find(children.begin(), children.end(), pupil);
         if (it != children.end()) {
             tellAboutChild(*it);
-        } else {
+        }
+        else {
             std::cout << "Ошибка: Этот ученик не является ребенком опекуна." << std::endl;
         }
     }
@@ -249,7 +242,8 @@ protected:
         std::cout << "Опекун " << name << " рассказывает о ребенке " << pupil->getName() << ": ";
         if (goodMood) {
             std::cout << (pupil->isExcellentPupil() ? "Отличник" : "Не отличник") << std::endl;
-        } else {
+        }
+        else {
             std::cout << "У него всегда что-то не так." << std::endl;
         }
     }
@@ -271,21 +265,26 @@ private:
 class GrandGuardian : public Guardian {
 public:
     GrandGuardian(std::string name) : Guardian(name) {}
-
     void tellAboutChild(const Pupil* pupil) const override {
         if (hasChild(*pupil)) {
             std::cout << "Бабушка " << getName() << " рассказывает о своем внучке " << pupil->getName() << ": ";
             std::cout << "Всегда был хороший ребенок, умный и старательный." << std::endl;
-        } else {
+        }
+        else {
             // Бабушка рассказывает о чужих детях в зависимости от настроения
             std::cout << "Бабушка " << getName() << " рассказывает о чужом ребенке " << pupil->getName() << ": ";
             if (goodMood) {
                 std::cout << (pupil->isExcellentPupil() ? "Отличник" : "Не отличник") << std::endl;
-            } else {
+            }
+            else {
                 std::cout << "У него всегда что-то не так." << std::endl;
             }
         }
     }
+private:
+    std::string name;
+    bool goodMood = (rand() % 2 == 0);
+    std::vector<const Pupil*> children;
 };
 
 class Council {
@@ -300,49 +299,109 @@ public:
         guardians.push_back(&guardian);
     }
 
-    void addParticipant(GrandGuardian& grandGuardian) {
-        grandGuardians.push_back(&grandGuardian);
+    void discussSubjects() {
+        std::cout << "Начало обсуждения на совете: " << name << std::endl;
+
+        for (Subject& subject : subjects) {
+            std::cout << "Обсуждение предмета: " << subject.getName() << std::endl;
+
+            for (Tutor* tutor : tutors) {
+                if (subject.hasTutor(*tutor)) {
+                    for (Pupil* pupil : subject.getPupils()) {
+                        Guardian* guardian = findGuardianOfPupil(*pupil);
+                        if (guardian) {
+                            guardian->tellAboutSpecificChild(pupil);
+                        }
+                        else {
+                            // Формируем список детей, чьи опекуны отсутствуют на совете
+                            childrenWithoutGuardians.push_back(pupil);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Оглашение списка детей, чьи опекуны отсутствуют на совете
+        if (!childrenWithoutGuardians.empty()) {
+            std::cout << "Дети, чьи опекуны отсутствуют на совете:" << std::endl;
+            for (const Pupil* pupil : childrenWithoutGuardians) {
+                std::cout << pupil->getName() << std::endl;
+            }
+        }
+
+        std::cout << "Завершение совета: " << name << std::endl;
     }
 
-    void holdMeeting(const std::vector<Lesson>& lessons) {
-        std::cout << "Собрание " << name << " начинается!" << std::endl;
-        discussLessons(lessons);
-        discussChildren();
-        std::cout << "Собрание закончено." << std::endl;
+    void addSubject(const Subject& subject) {
+        subjects.push_back(subject);
     }
 
 private:
-    void discussLessons(const std::vector<Lesson>& lessons) const {
-        for (const Lesson& lesson : lessons) {
-            std::cout << "Обсуждаем занятие:" << std::endl;
-            for (const Tutor* tutor : tutors) {
-                if (lesson.hasTutor(*tutor)) {
-                    tutor->tellAboutLessons(lesson);
-                }
+    Guardian* findGuardianOfPupil(const Pupil& pupil) {
+        for (Guardian* guardian : guardians) {
+            if (guardian->hasChild(pupil)) {
+                return guardian;
             }
-            std::cout << std::endl;
         }
-    }
-
-    void discussChildren() const {
-        std::cout << "Обсуждаем детей:" << std::endl;
-        for (const Guardian* guardian : guardians) {
-            guardian->tellAboutAllChildren();
-        }
-        for (const GrandGuardian* grandGuardian : grandGuardians) {
-            grandGuardian->tellAboutAllChildren();
-        }
+        return nullptr;
     }
 
     std::string name;
-    std::vector<const Tutor*> tutors;
-    std::vector<const Guardian*> guardians;
-    std::vector<const GrandGuardian*> grandGuardians;
+    std::vector<Tutor*> tutors;
+    std::vector<Guardian*> guardians;
+    std::vector<Subject> subjects;
+    std::vector<const Pupil*> childrenWithoutGuardians;
 };
 
-
 int main() {
+    std::srand(std::time(0));
+    setlocale(LC_ALL, "Russian");
+
+    Tutor tutor1("Сидоров");
+    RandomlyTutor tutor2("Синевов");
+    GrandGuardian guardian1("Анна");
+    Guardian guardian2("Игорь");
+    Pupil pupil1("Иванов");
+    Pupil pupil2("Петров");
+    Pupil pupil3("Сидоров");
+
+    guardian1.addChild(pupil1);
+    guardian2.addChild(pupil2);
+
+    Subject subject1("Математика");
+    subject1.addTutor(tutor1);
+    subject1.addTutor(tutor2);
+    subject1.addPupil(pupil1);
+    subject1.addPupil(pupil2);
+    subject1.conductSubject();
+
+    Subject subject2("Физика");
+    subject2.addTutor(tutor2);
+    subject2.addPupil(pupil3
+    );
+    subject2.conductSubject();
+
+    guardian1.tellAboutAllChildren();
+    guardian2.tellAboutOneRandomChild();
+
+    tutor1.addMark(pupil1, 4);
+    tutor1.addMark(pupil2, 5);
+    tutor1.addMark(pupil3, 3);
+
+    guardian1.tellAboutSpecificChild(&pupil1);
+    guardian2.tellAboutAverageChildren();
+
+    Council council("Школьный совет");
+    council.addParticipant(tutor1);
+    council.addParticipant(tutor2);
+    council.addParticipant(guardian1);
+    council.addParticipant(guardian2);
+    council.addSubject(subject1);
+    council.addSubject(subject2);
+
+    council.discussSubjects();
 
     return 0;
 }
 
+// вот это я абоба, старые коммиты мог почистить, но тороплюсь и приступаю к следующему заданию
