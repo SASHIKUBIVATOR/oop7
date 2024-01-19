@@ -189,7 +189,160 @@ private:
     std::vector<Pupil*> pupils;
 };
 
+class Guardian {
+public:
+    Guardian(std::string name) : name(name) {}
+
+    const std::string& getName() const {
+        return name;
+    }
+
+    void addChild(Pupil& pupil) {
+        children.push_back(&pupil);
+    }
+
+    bool hasChild(const Pupil& pupil) const {
+        return std::find(children.begin(), children.end(), &pupil) != children.end();
+    }
+
+    void tellAboutAllChildren() const {
+        std::cout << "Рассказ о всех детях:" << std::endl;
+        for (const Pupil* pupil : children) {
+            tellAboutChild(pupil);
+        }
+        std::cout << std::endl;
+    }
+
+    void tellAboutOneRandomChild() const {
+        if (children.empty()) {
+            std::cout << "Нет детей для рассказа." << std::endl;
+            return;
+        }
+
+        int randomIndex = rand() % children.size();
+        tellAboutChild(children[randomIndex]);
+        std::cout << std::endl;
+    }
+
+    void tellAboutAverageChildren() const {
+        if (children.empty()) {
+            std::cout << "Нет детей для рассказа." << std::endl;
+            return;
+        }
+
+        double averageMark = calculateAverageMark();
+        std::cout << "Рассказ о средней успеваемости детей: " << (averageMark >= 4.5 ? "Хорошая" : "Плохая") << std::endl;
+        std::cout << std::endl;
+    }
+
+    void tellAboutSpecificChild(const Pupil* pupil) const {
+        auto it = std::find(children.begin(), children.end(), pupil);
+        if (it != children.end()) {
+            tellAboutChild(*it);
+        } else {
+            std::cout << "Ошибка: Этот ученик не является ребенком опекуна." << std::endl;
+        }
+    }
+
+protected:
+    virtual void tellAboutChild(const Pupil* pupil) const {
+        std::cout << "Опекун " << name << " рассказывает о ребенке " << pupil->getName() << ": ";
+        if (goodMood) {
+            std::cout << (pupil->isExcellentPupil() ? "Отличник" : "Не отличник") << std::endl;
+        } else {
+            std::cout << "У него всегда что-то не так." << std::endl;
+        }
+    }
+
+    double calculateAverageMark() const {
+        double sum = 0.0;
+        for (const Pupil* pupil : children) {
+            sum += (pupil->isExcellentPupil() ? 5.0 : 3.0);
+        }
+
+        return sum / children.size();
+    }
+private:
+    std::string name;
+    bool goodMood = (rand() % 2 == 0);
+    std::vector<const Pupil*> children;
+};
+
+class GrandGuardian : public Guardian {
+public:
+    GrandGuardian(std::string name) : Guardian(name) {}
+
+    void tellAboutChild(const Pupil* pupil) const override {
+        if (hasChild(*pupil)) {
+            std::cout << "Бабушка " << getName() << " рассказывает о своем внучке " << pupil->getName() << ": ";
+            std::cout << "Всегда был хороший ребенок, умный и старательный." << std::endl;
+        } else {
+            // Бабушка рассказывает о чужих детях в зависимости от настроения
+            std::cout << "Бабушка " << getName() << " рассказывает о чужом ребенке " << pupil->getName() << ": ";
+            if (goodMood) {
+                std::cout << (pupil->isExcellentPupil() ? "Отличник" : "Не отличник") << std::endl;
+            } else {
+                std::cout << "У него всегда что-то не так." << std::endl;
+            }
+        }
+    }
+};
+
+class Council {
+public:
+    Council(const std::string& name) : name(name) {}
+
+    void addParticipant(Tutor& tutor) {
+        tutors.push_back(&tutor);
+    }
+
+    void addParticipant(Guardian& guardian) {
+        guardians.push_back(&guardian);
+    }
+
+    void addParticipant(GrandGuardian& grandGuardian) {
+        grandGuardians.push_back(&grandGuardian);
+    }
+
+    void holdMeeting(const std::vector<Lesson>& lessons) {
+        std::cout << "Собрание " << name << " начинается!" << std::endl;
+        discussLessons(lessons);
+        discussChildren();
+        std::cout << "Собрание закончено." << std::endl;
+    }
+
+private:
+    void discussLessons(const std::vector<Lesson>& lessons) const {
+        for (const Lesson& lesson : lessons) {
+            std::cout << "Обсуждаем занятие:" << std::endl;
+            for (const Tutor* tutor : tutors) {
+                if (lesson.hasTutor(*tutor)) {
+                    tutor->tellAboutLessons(lesson);
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    void discussChildren() const {
+        std::cout << "Обсуждаем детей:" << std::endl;
+        for (const Guardian* guardian : guardians) {
+            guardian->tellAboutAllChildren();
+        }
+        for (const GrandGuardian* grandGuardian : grandGuardians) {
+            grandGuardian->tellAboutAllChildren();
+        }
+    }
+
+    std::string name;
+    std::vector<const Tutor*> tutors;
+    std::vector<const Guardian*> guardians;
+    std::vector<const GrandGuardian*> grandGuardians;
+};
+
+
 int main() {
-    
+
     return 0;
 }
+
