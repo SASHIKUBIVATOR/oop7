@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 
-class Student {
+class Pupil {
 public:
-    Student(std::string name) : name(name) {}
+    Pupil(std::string name) : name(name) {}
 
     const std::string& getName() const {
         return name;
@@ -16,7 +17,7 @@ public:
         marks.push_back(mark);
     }
 
-    bool isExcellentStudent() const {
+    bool isExcellentPupil() const {
         return calculateAverageMark() >= 4.5;
     }
 
@@ -39,47 +40,58 @@ private:
     std::vector<int> marks;
 };
 
-class SchoolSystem {
+class Tutor {
 public:
-    void addStudent(Student& student) {
-        students.push_back(&student);
+    Tutor(std::string name) : name(name) {}
+
+    const std::string& getName() const {
+        return name;
     }
 
-    void addMark(Student& student, int mark) {
-        student.addMark(mark);
-        std::cout << "Преподаватель добавил оценку " << mark << " студенту " << student.getName() << std::endl;
+    bool getMood() const {
+        return goodMood;
     }
 
-    void determineExcellentStudents() const {
-        std::cout << "Отличники: ";
-        for (const Student* student : students) {
-            if (student->isExcellentStudent()) {
-                std::cout << student->getName() << " ";
-            }
+    virtual void addMarkRandomly(Pupil& pupil) {
+        int adjustedMark = calculateAdjustedMark(pupil.isExcellentPupil());
+        pupil.addMark(adjustedMark);
+        markCount++;
+
+        std::cout << "Учитель " << name << " поставил оценку " << adjustedMark
+                  << " ученику " << pupil.getName() << " с " << (goodMood ? "хорошим" : "плохим") << " настроением" << std::endl;
+
+        if (markCount % 5 == 0) {
+            changeMoodRandomly();
+            std::cout << "Настроение учителя " << name << " изменилось: "
+                      << (goodMood ? "Хорошее" : "Плохое") << std::endl;
         }
-        std::cout << std::endl;
     }
 
-private:
-    std::vector<Student*> students;
+    void addMark(Pupil& pupil, int mark) {
+        pupil.addMark(mark);
+        std::cout << "Учитель " << name << " поставил оценку " << mark
+                  << " ученику " << pupil.getName() << std::endl;
+    }
+
+protected:
+    int calculateAdjustedMark(bool isExcellentPupil) const {
+        if (goodMood) {
+            return (isExcellentPupil) ? 5 : (rand() % 2 + 4);
+        } else {
+            return (isExcellentPupil) ? (rand() % 2 + 4) : (rand() % 2 + 2);
+        }
+    }
+
+    void changeMoodRandomly() {
+        goodMood = (rand() % 2 == 0); // Равновероятное хорошее или плохое настроение
+    }
+
+    bool goodMood = (rand() % 2 == 0); // Равновероятное хорошее или плохое настроение
+    std::string name;
+    int markCount;
 };
 
 int main() {
-    std::srand(std::time(0));
-    setlocale(LC_ALL, "Russian");
-
-    SchoolSystem schoolSystem;
-
-    Student student1("Иванов");
-    Student student2("Петров");
-
-    schoolSystem.addStudent(student1);
-    schoolSystem.addStudent(student2);
-
-    schoolSystem.addMark(student1, 5);
-    schoolSystem.addMark(student2, 4);
-
-    schoolSystem.determineExcellentStudents();
-
+    //Этап 1
     return 0;
 }
