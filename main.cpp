@@ -96,6 +96,10 @@ public:
     RandomlyTutor(std::string name) : Tutor(name) {}
 
     void addMark(Pupil& pupil) override {
+        addMarkRandomly(pupil);
+    }
+
+    void addMarkRandomly(Pupil& pupil) override {
         int adjustedMark = rand() % 4 + 2;
         pupil.addMark(adjustedMark);
         markCount++;
@@ -110,15 +114,11 @@ public:
         }
     }
 
-    void addMarkRandomly(Pupil& pupil) override {
-        addMark(pupil);
-    }
-
 private:
     int randomNumberMood = rand() % 3 + 3;
 };
 
 int main() {
-    
+    // Ваш код для третьего коммита (Этап 3)
     return 0;
 }
